@@ -1,0 +1,51 @@
+---
+import { ArrowRight } from 'lucide-react';
+import PhoneMockup from '../home/PhoneMockup.astro';
+import { content, type Locale } from '../../i18n/content';
+import { site } from '../../config/site';
+import { whatsappUrl } from '../../scripts/whatsapp';
+import type { Theme } from '../../data/themes';
+
+interface Props {
+	theme: Theme;
+	locale: Locale;
+	hidden?: boolean;
+}
+
+const { theme, locale, hidden = false } = Astro.props;
+const t = content[locale].themes;
+// "Pakai template ini" starts an order for this theme on WhatsApp.
+const href = whatsappUrl(t.useMessage.replace('{site}', site.name).replace('{name}', theme.name).replace('{code}', theme.code));
+---
+
+<article class="flex flex-col" data-theme-card data-category={theme.category} hidden={hidden}>
+	<div class="mx-auto w-full max-w-[200px]" aria-hidden="true">
+		<PhoneMockup
+			size="sm"
+			palette={theme.palette}
+			label={t.coverLabel}
+			first={theme.cover.first}
+			second={theme.cover.second}
+			date={theme.cover.date}
+			class="shadow-[0_18px_36px_-18px_rgb(16_42_67/40%)]"
+		/>
+	</div>
+	<div class="mt-4 flex flex-1 flex-col">
+		<p class="text-muted-foreground text-xs font-semibold">{t.categories[theme.category]}</p>
+		<h3 class="font-display mt-0.5 mb-2 text-lg leading-snug font-semibold">{theme.name}</h3>
+		{/* Text link with an arrow (no box), pinned to the bottom so links line up across a row. */}
+		<a
+			class="group/use text-muted-foreground hover:text-primary focus-visible:ring-ring/50 mt-auto inline-flex w-fit items-center gap-1.5 rounded-sm text-sm font-semibold transition-colors outline-none focus-visible:ring-[3px] motion-reduce:transition-none"
+			href={href}
+			target="_blank"
+			rel="noopener"
+			aria-label={t.useLabel.replace('{name}', theme.name)}
+		>
+			{t.use}
+			<ArrowRight
+				className="size-4 transition-transform group-hover/use:translate-x-0.5 motion-reduce:transition-none"
+				aria-hidden="true"
+			/>
+		</a>
+	</div>
+</article>

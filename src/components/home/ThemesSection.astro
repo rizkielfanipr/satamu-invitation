@@ -1,0 +1,30 @@
+---
+import SectionIntro from '../ui/SectionIntro.astro';
+import ThemeGrid from '../themes/ThemeGrid.astro';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { content, type Locale } from '../../i18n/content';
+import { HOME_THEME_LIMIT } from '../../data/themes';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = content[locale].themes;
+---
+
+<section class="bg-card scroll-mt-20 px-6 py-16 md:px-8 md:py-24 lg:px-10" id="themes" aria-labelledby="themes-title">
+	<div class="mx-auto max-w-6xl">
+		<SectionIntro id="themes-title" eyebrow={t.eyebrow} title={t.title} emphasis={t.emphasis} description={t.description} />
+		<ThemeGrid locale={locale} limit={HOME_THEME_LIMIT} />
+		<div class="mt-12 flex justify-center">
+			<a
+				class={cn(buttonVariants({ variant: 'outline' }), 'hover:border-primary/45 h-12 gap-3 rounded-lg px-6 text-sm font-semibold')}
+				href="/themes/"
+			>
+				{t.viewAll} <span aria-hidden="true">→</span>
+			</a>
+		</div>
+	</div>
+</section>

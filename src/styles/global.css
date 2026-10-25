@@ -1,44 +1,92 @@
-/* Design tokens taken from the Satamu logo (public/images/satamu-logo-flat.svg). */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* Light theme only for now; .dark is kept so shadcn/ui components can use the dark: variant later. */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * shadcn/ui theme variables, coloured from the Satamu logo (docs/design.md) (public/images/satamu-logo-flat.svg):
+ * navy #102A43, coral #FF6542, slate #526779, cream #FFF7F2.
+ */
 :root {
-	--navy: #102a43;
-	--coral: #ff6542;
-	--slate: #526779;
-	--cream: #fff7f2;
-	--background: #fffaf6;
-	--foreground: var(--navy);
-	--muted: var(--slate);
-	--primary: var(--coral);
-	--primary-foreground: #ffffff;
-	--border: #f1e2d9;
 	--radius: 1rem;
-	--font-sans: 'Nunito Sans', 'Avenir Next', Avenir, system-ui, sans-serif;
+	--background: #fffaf6;
+	--foreground: #102a43;
+	--card: #ffffff;
+	--card-foreground: #102a43;
+	--popover: #ffffff;
+	--popover-foreground: #102a43;
+	--primary: #ff6542;
+	--primary-foreground: #ffffff;
+	--secondary: #fff7f2;
+	--secondary-foreground: #102a43;
+	--muted: #f6f2ef;
+	--muted-foreground: #526779;
+	--accent: #ffe6dc;
+	--accent-foreground: #102a43;
+	--destructive: #dc2626;
+	--border: #f1e2d9;
+	--input: #f1e2d9;
+	--ring: #ff6542;
 }
 
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
+/* Exposes the variables as Tailwind colours (bg-primary, text-muted-foreground, …) and brand helpers. */
+@theme inline {
+	/* Same type as Prasetya Webworks (docs/design.md). */
+	--font-sans: 'Plus Jakarta Sans', sans-serif;
+	--font-display: Raleway, var(--font-sans);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-navy: #102a43;
+	--color-coral: #ff6542;
+	--color-slate-brand: #526779;
+	--color-cream: #fff7f2;
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--shadow-brand: 0 10px 15px -3px rgb(255 101 66 / 25%), 0 4px 6px -4px rgb(255 101 66 / 25%);
 }
 
-html {
-	-webkit-text-size-adjust: 100%;
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+
+	body {
+		@apply bg-background text-foreground antialiased;
+	}
 }
 
-body {
-	margin: 0;
-	color: var(--foreground);
-	background: var(--background);
-	font-family: var(--font-sans);
-	line-height: 1.5;
-	-webkit-font-smoothing: antialiased;
+/* Soft coral and navy glows used behind hero sections (radial gradients, never filter: blur()). */
+@utility bg-satamu-glow {
+	background:
+		radial-gradient(circle at 80% 15%, rgb(255 101 66 / 16%), transparent 32%),
+		radial-gradient(circle at 10% 90%, rgb(16 42 67 / 8%), transparent 30%), var(--background);
 }
 
-img {
-	max-width: 100%;
-	height: auto;
-}
-
-/* Shared vertical rhythm for page sections. */
-.section-pad {
-	padding: clamp(4rem, 6vw, 6.5rem) clamp(1.5rem, 4vw, 2.5rem);
+/* Hero backdrop: the coral/navy glows over a faint navy grid. */
+@utility bg-satamu-hero {
+	background:
+		radial-gradient(circle at 78% 30%, rgb(255 101 66 / 18%), transparent 34%),
+		radial-gradient(circle at 8% 92%, rgb(16 42 67 / 7%), transparent 30%),
+		linear-gradient(rgb(16 42 67 / 4.5%) 1px, transparent 1px) 0 0 / 64px 64px,
+		linear-gradient(90deg, rgb(16 42 67 / 4.5%) 1px, transparent 1px) 0 0 / 64px 64px,
+		var(--background);
 }

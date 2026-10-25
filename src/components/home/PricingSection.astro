@@ -1,0 +1,71 @@
+---
+import { Check } from 'lucide-react';
+import SectionIntro from '../ui/SectionIntro.astro';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { content, type Locale } from '../../i18n/content';
+import { site } from '../../config/site';
+import { whatsappUrl } from '../../scripts/whatsapp';
+
+interface Props {
+	locale: Locale;
+}
+
+const t = content[Astro.props.locale].packages;
+const items = t.items.map((item) => ({
+	...item,
+	popular: 'popular' in item && item.popular,
+	href: whatsappUrl(t.selectMessage.replace('{site}', site.name).replace('{name}', item.name).replace('{price}', item.price)),
+}));
+---
+
+<section class="scroll-mt-20 px-6 py-16 md:px-8 md:py-24 lg:px-10" id="packages" aria-labelledby="packages-title">
+	<div class="mx-auto max-w-6xl">
+		<SectionIntro id="packages-title" eyebrow={t.eyebrow} title={t.title} emphasis={t.emphasis} description={t.description} />
+
+		<div class="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)] gap-x-5 gap-y-8 lg:max-w-5xl lg:grid-cols-3">
+			{items.map((item) => (
+				<article
+					class={cn(
+						'bg-card relative flex flex-col rounded-lg border p-6',
+						item.popular && 'border-primary from-secondary to-card bg-gradient-to-b to-55% shadow-[0_0_0_1px_var(--primary)]',
+					)}
+				>
+					{item.popular && (
+						<p class="bg-primary text-primary-foreground absolute top-0 left-6 -translate-y-1/2 rounded-[8px] px-3 py-1 text-xs leading-[1.33] font-bold tracking-[0.08em] uppercase">
+							{t.popular}
+						</p>
+					)}
+					<h3 class="font-display text-xl leading-tight font-semibold">{item.name}</h3>
+					<p class="text-muted-foreground mt-2 min-h-[2.9em] text-sm leading-[1.45]">{item.tagline}</p>
+					<p class="border-border mt-5 flex flex-wrap items-baseline gap-x-2 border-b pb-5">
+						<strong class="font-display text-[2.1rem] leading-none font-bold tracking-[-0.04em]">{item.price}</strong>
+						<span class="text-muted-foreground text-sm font-semibold whitespace-nowrap">{t.perEvent}</span>
+					</p>
+					<ul class="my-6 grid gap-3 text-sm leading-[1.45]">
+						{item.features.map((feature) => (
+							<li class="flex gap-2.5">
+								<Check className="text-primary mt-0.5 size-4 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+								{feature}
+							</li>
+						))}
+					</ul>
+					<a
+						class={cn(
+							buttonVariants({ variant: item.popular ? 'default' : 'outline' }),
+							'mt-auto h-12 w-full rounded-lg text-sm font-semibold',
+							item.popular ? 'shadow-brand' : 'hover:border-primary/45',
+						)}
+						href={item.href}
+						target="_blank"
+						rel="noopener"
+					>
+						{t.select}
+					</a>
+				</article>
+			))}
+		</div>
+
+		<p class="text-muted-foreground mt-8 text-center text-sm">{t.note}</p>
+	</div>
+</section>

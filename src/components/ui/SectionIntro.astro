@@ -1,0 +1,37 @@
+---
+/**
+ * Section heading: lined eyebrow, then "<title> <em>emphasis</em>" on the left and the description on the right
+ * (stacked on phones). The emphasis uses the coral semibold italic from docs/design.md ("Mixing styles").
+ */
+interface Props {
+	/** id of the heading, referenced by the section's aria-labelledby. */
+	id: string;
+	eyebrow: string;
+	title: string;
+	emphasis: string;
+	description?: string;
+	/** h2 inside a page, h1 when the intro is the page's own title. */
+	level?: 'h1' | 'h2';
+}
+
+const { id, eyebrow, title, emphasis, description, level = 'h2' } = Astro.props;
+const Heading = level;
+---
+
+<header class="mb-10 md:mb-14">
+	<p class="text-primary mb-5 flex items-center gap-3 text-xs leading-[1.33] font-bold tracking-[0.12em] uppercase">
+		<span class="h-px w-8 bg-current" aria-hidden="true"></span>
+		{eyebrow}
+	</p>
+	<div class="grid grid-cols-[minmax(0,1fr)] items-end gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-16">
+		<Heading
+			class="font-display text-[clamp(1.875rem,8vw,2.25rem)] leading-[1.05] font-semibold tracking-[-0.7px] text-balance md:text-5xl md:leading-none md:tracking-[-1px]"
+			id={id}
+		>
+			{/* Astro drops the plain space before <em> inside a dynamic tag, so the title carries its own. */}
+			{`${title} `}
+			<em class="text-primary font-semibold italic">{emphasis}</em>
+		</Heading>
+		{description && <p class="text-muted-foreground max-w-md text-base leading-normal md:text-[15px] md:leading-[1.87]">{description}</p>}
+	</div>
+</header>

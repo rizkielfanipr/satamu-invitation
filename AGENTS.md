@@ -23,7 +23,7 @@ Satamu follows the same conventions as `../prasetya-webworks`. Details and reaso
 ### Structure
 
 - `src/pages/` only routes: import a page component and pass `locale` and params. No markup or styles there.
-- `src/components/layout/` site-wide pieces; `components/ui/` generic, text via props; `components/home/` one component per home section, composed in `HomePage.astro`.
+- `src/components/layout/` site-wide pieces; `components/ui/` shadcn/ui primitives (`button.tsx`, …), text via props; `components/home/` one component per home section, composed in `HomePage.astro`.
 - Reuse existing components before writing new markup. Do not copy a component to change it slightly; add a prop.
 - Shared browser logic goes in `src/scripts/` as exported functions; component `<script>` blocks import them.
 - Site constants (name, WhatsApp number, logo, parent brand) come from `src/config/site.ts`.
@@ -34,14 +34,19 @@ Satamu follows the same conventions as `../prasetya-webworks`. Details and reaso
 - All UI text lives in `src/i18n/content.ts`. Indonesian (`id`) only for now; when English is added, use the same keys in `en`. Never hard-code visible text in components.
 - URLs and anchors are English, lowercase, hyphenated, plural for collections (`/themes/`, `#packages`).
 
-### CSS
+### Styling (Tailwind CSS + shadcn/ui)
 
-- Component styles go in the component's scoped `<style>`. `src/styles/global.css` holds only design tokens, base element styles and cross-component utilities (`.section-pad`).
-- Colours come from the Satamu logo tokens (`var(--navy)`, `var(--coral)`, `var(--slate)`, `var(--cream)`); use tokens instead of raw values.
-- One rule per selector (Stylelint enforces `no-duplicate-selectors`). Order: base rules, `@keyframes`, `@media` 1000px → 800px → 560px, then `prefers-reduced-motion`.
-- Never use `filter: blur()` for decoration (Stylelint blocks it): Safari iOS clips it to a square inside rounded, overflow-hidden containers. Use `radial-gradient`.
-- Constrain grid columns that hold text with `minmax(0, 1fr)`.
-- Respect `prefers-reduced-motion` for animations and transitions.
+- `docs/design.md` is the source of truth for colours, typography, spacing, radius and component rules. It mirrors the Prasetya Webworks design system (including Raleway + Plus Jakarta Sans) with Satamu colours.
+- Style with Tailwind utility classes in the markup. No `<style>` blocks in components; see ADR 0002.
+- `src/styles/global.css` holds only the Tailwind import, the shadcn/ui theme variables (`--background`, `--primary`, `--muted-foreground`, …, coloured from the Satamu logo), the `@theme inline` mapping, base layer rules and a few `@utility` helpers (`bg-satamu-glow`).
+- Use theme colours (`bg-primary`, `text-muted-foreground`, `border-border`, `text-navy`, `bg-cream`) instead of raw hex values. Add a new colour as a variable plus `@theme` entry, not inline.
+- shadcn/ui components live in `src/components/ui/*.tsx` and are owned source. Add them from the registry (`npx shadcn add <name>`, run with `--cwd` from outside the project if npm blocks install scripts) and adjust them there; do not wrap a copy.
+- React components render to static HTML by default. Add `client:*` only when the component really needs browser state (dialogs, menus); prefer an `<a>`/`<button>` with `buttonVariants()` from `@/components/ui/button` for links and simple buttons.
+- Merge class names with `cn()` from `@/lib/utils`. Import with the `@/` alias (`@/components/...`, `@/lib/...`).
+- Prettier sorts Tailwind classes (`prettier-plugin-tailwindcss`); do not reorder by hand.
+- Never use `filter: blur()` or `blur-*` utilities for decoration: Safari iOS clips them to a square inside rounded, overflow-hidden containers. Use radial gradients (`bg-satamu-glow`).
+- Respect reduced motion: pair transitions and transforms with `motion-reduce:` variants.
+- Mobile first: base classes for phones, then `md:` / `lg:`. Check 360px, 768px and desktop.
 
 ### Git
 

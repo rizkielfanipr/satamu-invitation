@@ -1,0 +1,85 @@
+---
+import { Menu } from 'lucide-react';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { content, type Locale } from '../../i18n/content';
+import { site } from '../../config/site';
+import { whatsappUrl } from '../../scripts/whatsapp';
+
+interface Props {
+	locale: Locale;
+	/** On the home page links scroll within the page; elsewhere they lead back to the home sections. */
+	onHome?: boolean;
+}
+
+const { locale, onHome = true } = Astro.props;
+const all = content[locale];
+const base = onHome ? '' : '/';
+const t = all.nav;
+const orderHref = whatsappUrl(all.hero.message.replace('{site}', site.name));
+---
+
+{/* Transparent at the top of the page; once scrolled (data-scrolled) the bar floats with a border and background. */}
+<header
+	class="group fixed inset-x-0 top-0 z-50 px-0 transition-[padding] duration-300 data-scrolled:px-3 data-scrolled:pt-3 motion-reduce:transition-none md:data-scrolled:px-6"
+	data-site-header
+>
+	<div class="mx-auto flex h-20 max-w-6xl items-center justify-between gap-6 rounded-lg border border-transparent px-6 transition-all duration-300 group-data-scrolled:h-16 group-data-scrolled:max-w-7xl group-data-scrolled:border-border group-data-scrolled:bg-background group-data-scrolled:px-4 group-data-scrolled:shadow-[0_8px_24px_-12px_rgb(16_42_67/18%)] motion-reduce:transition-none md:px-8 md:group-data-scrolled:px-5">
+		<a class="shrink-0" href={onHome ? '#top' : '/'} aria-label={t.home}>
+			<img class="h-12 w-auto" src={site.logo} alt={site.name} width="2400" height="900" />
+		</a>
+
+		<nav class="hidden items-center gap-8 lg:flex" aria-label={t.label}>
+			{t.links.map((link) => (
+				<a class="text-foreground/75 hover:text-foreground text-sm font-semibold transition-colors" href={`${base}${link.hash}`}>
+					{link.label}
+				</a>
+			))}
+		</nav>
+
+		<div class="flex items-center gap-2">
+			<a
+				class={cn(buttonVariants(), 'shadow-brand hidden h-10 gap-2 rounded-[12px] px-5 text-sm font-semibold sm:inline-flex')}
+				href={orderHref}
+				target="_blank"
+				rel="noopener"
+			>
+				<i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>
+				{t.order}
+			</a>
+
+			{/* Native <details> menu: works without JavaScript. */}
+			<details class="relative lg:hidden" data-mobile-menu>
+				<summary
+					class="border-border bg-card flex size-10 cursor-pointer list-none items-center justify-center rounded-[12px] border [&::-webkit-details-marker]:hidden"
+					aria-label={t.menu}
+				>
+					<Menu className="size-5" aria-hidden="true" />
+				</summary>
+				<div class="border-border bg-card absolute top-12 right-0 grid w-56 gap-1 rounded-lg border p-2 shadow-[0_16px_40px_-16px_rgb(16_42_67/25%)]">
+					{t.links.map((link) => (
+						<a class="hover:bg-secondary rounded-[12px] px-3 py-2.5 text-sm font-semibold" href={`${base}${link.hash}`}>
+							{link.label}
+						</a>
+					))}
+					<a
+						class={cn(buttonVariants(), 'mt-1 h-10 gap-2 rounded-[12px] text-sm font-semibold')}
+						href={orderHref}
+						target="_blank"
+						rel="noopener"
+					>
+						<i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>
+						{t.order}
+					</a>
+				</div>
+			</details>
+		</div>
+	</div>
+</header>
+
+<script>
+	import { initSiteHeader } from '../../scripts/header';
+
+	const header = document.querySelector<HTMLElement>('[data-site-header]');
+	if (header) initSiteHeader(header);
+</script>

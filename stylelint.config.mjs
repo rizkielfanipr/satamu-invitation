@@ -10,7 +10,14 @@ export default {
 		'declaration-property-value-disallowed-list': { filter: ['/blur\\(/'] },
 		// Scoped component styles make specificity order across components irrelevant.
 		'no-descending-specificity': null,
-		// Astro's :global() is allowed, but prefer src/styles/global.css (see docs/development.md).
+		// Astro's :global() is allowed.
 		'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
+		// Tailwind CSS v4 directives in src/styles/global.css.
+		'at-rule-no-unknown': [
+			true,
+			{ ignoreAtRules: ['theme', 'custom-variant', 'apply', 'utility', 'variant', 'source', 'plugin', 'reference'] },
+		],
+		// @apply takes Tailwind class names, which are not a CSS prelude.
+		'at-rule-prelude-no-invalid': null,
 	},
 };

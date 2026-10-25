@@ -1,7 +1,11 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import SiteHeader from '../layout/SiteHeader.astro';
 import SiteFooter from '../layout/SiteFooter.astro';
 import HeroSection from './HeroSection.astro';
+import ThemesSection from './ThemesSection.astro';
+import PricingSection from './PricingSection.astro';
+import FaqSection from './FaqSection.astro';
 import { type Locale } from '../../i18n/content';
 
 interface Props {
@@ -12,8 +16,12 @@ const { locale } = Astro.props;
 ---
 
 <Layout lang={locale}>
+	<SiteHeader locale={locale} />
 	<main id="top">
 		<HeroSection locale={locale} />
+		<ThemesSection locale={locale} />
+		<PricingSection locale={locale} />
+		<FaqSection locale={locale} />
 	</main>
 	<SiteFooter locale={locale} />
 </Layout>

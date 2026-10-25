@@ -1,41 +1,98 @@
 ---
+/** Dark footer, laid out like the Prasetya Webworks footer: brand + social, menu, contact, then a bottom bar. */
+import { Heart } from 'lucide-react';
 import { content, type Locale } from '../../i18n/content';
 import { site } from '../../config/site';
+import { whatsappUrl } from '../../scripts/whatsapp';
 
 interface Props {
 	locale: Locale;
+	/** On the home page links scroll within the page; elsewhere they lead back to the home sections. */
+	onHome?: boolean;
 }
 
-const t = content[Astro.props.locale].footer;
+const { locale, onHome = true } = Astro.props;
+const all = content[locale];
+const t = all.footer;
+const base = onHome ? '' : '/';
+// 628995449805 → +62 899-5449-805
+const phone = site.whatsapp.replace(/^(\d{2})(\d{3})(\d{4})(\d+)$/, '+$1 $2-$3-$4');
+const linkClass = 'transition-colors hover:text-white motion-reduce:transition-none';
 ---
 
-<footer class="site-footer">
-	<p>
-		{t.by} <a href={site.parent.url}>{site.parent.name}</a>.
-	</p>
-	<p>
-		© {new Date().getFullYear()} {site.name}. {t.rights}
-	</p>
+<footer class="bg-foreground border-primary border-t-[3px] px-6 pt-12 text-white/70 md:px-8 md:pt-16 lg:px-10">
+	<div class="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-10 md:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1fr)] lg:gap-20">
+		<div class="md:col-span-2 lg:col-span-1">
+			<img class="h-14 w-auto" src={site.logoOnDark} alt={site.name} width="2400" height="900" />
+			<p class="mt-4 max-w-sm text-[15px] leading-[1.7]">{t.tagline}</p>
+			<ul class="mt-6 flex gap-2.5">
+				{site.social.map((profile) => (
+					<li>
+						<a
+							class="focus-visible:ring-primary grid size-10 place-items-center rounded-[10px] border border-white/25 transition-colors outline-none hover:border-primary hover:bg-primary hover:text-white focus-visible:ring-2 motion-reduce:transition-none"
+							href={profile.url}
+							target="_blank"
+							rel="noopener"
+							aria-label={t.social.replace('{network}', profile.network)}
+							title={profile.network}
+						>
+							<i class:list={['fa-brands', profile.icon]} aria-hidden="true" />
+						</a>
+					</li>
+				))}
+			</ul>
+		</div>
+
+		<nav aria-labelledby="footer-menu-title">
+			<h2 class="font-display mb-5 text-sm font-bold tracking-[0.12em] text-white uppercase" id="footer-menu-title">
+				{t.menu}
+			</h2>
+			<ul class="grid gap-3.5 text-[15px]">
+				{all.nav.links.map((link) => (
+					<li>
+						<a class={linkClass} href={`${base}${link.hash}`}>
+							{link.label}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+
+		<div>
+			<h2 class="font-display mb-5 text-sm font-bold tracking-[0.12em] text-white uppercase">{t.contact}</h2>
+			<p class="font-semibold text-white">{site.name}</p>
+			<p class="mt-1">{t.location}</p>
+			<ul class="mt-5 grid gap-3 text-[15px]">
+				<li>
+					<a
+						class:list={[linkClass, 'inline-flex items-center gap-3']}
+						href={whatsappUrl(all.hero.message.replace('{site}', site.name))}
+						target="_blank"
+						rel="noopener"
+					>
+						<i class="fa-brands fa-whatsapp w-[18px] text-center text-lg" aria-hidden="true" />
+						{phone}
+					</a>
+				</li>
+				<li class="flex items-start gap-3">
+					<Heart className="mt-0.5 size-[18px] shrink-0" aria-hidden="true" />
+					<span>
+						{t.by}{' '}
+						<a class="font-semibold text-white underline-offset-4 hover:underline" href={site.parent.url}>
+							{site.parent.name}
+						</a>
+					</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="mx-auto mt-12 flex max-w-6xl flex-col gap-3 border-t border-white/12 py-6 text-sm text-white/50 sm:flex-row sm:justify-between md:mt-16">
+		<span>
+			© {new Date().getFullYear()} {site.name}. {t.rights}
+		</span>
+		<a class={linkClass} href="#top">
+			{t.back} ↑
+		</a>
+	</div>
 </footer>
-
-<style>
-	.site-footer {
-		padding: 1.75rem clamp(1.5rem, 4vw, 2.5rem);
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		gap: 0.5rem 2rem;
-		color: var(--muted);
-		border-top: 1px solid var(--border);
-		font-size: 0.85rem;
-	}
-
-	.site-footer p {
-		margin: 0;
-	}
-
-	.site-footer a {
-		color: var(--foreground);
-		font-weight: 700;
-	}
-</style>

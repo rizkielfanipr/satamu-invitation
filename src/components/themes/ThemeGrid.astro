@@ -1,0 +1,50 @@
+---
+/** Category filter and theme cards. With `limit`, only that many cards show per filter (home); without it, all show (catalog). */
+import ThemeCard from './ThemeCard.astro';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { content, type Locale } from '../../i18n/content';
+import { interleavedThemes, themeCategories } from '../../data/themes';
+
+interface Props {
+	locale: Locale;
+	limit?: number;
+}
+
+const { locale, limit } = Astro.props;
+const t = content[locale].themes;
+const items = interleavedThemes();
+const filters = [{ key: 'all', label: t.all }, ...themeCategories.map((key) => ({ key, label: t.categories[key] }))];
+---
+
+<div data-theme-grid data-limit={limit}>
+	{/* All filters stay visible: on narrow screens they wrap onto a second line. */}
+	<div class="mb-8" role="group" aria-label={t.filterLabel}>
+		<div class="flex flex-wrap gap-2">
+			{filters.map((filter) => (
+				<button
+					class={cn(
+						buttonVariants({ variant: 'outline', size: 'sm' }),
+						'aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground h-9 rounded-[12px] px-4 text-sm font-semibold',
+					)}
+					type="button"
+					aria-pressed={filter.key === 'all' ? 'true' : 'false'}
+					data-theme-filter={filter.key}
+				>
+					{filter.label}
+				</button>
+			))}
+		</div>
+	</div>
+	<div class="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
+		{items.map((theme, index) => (
+			<ThemeCard theme={theme} locale={locale} hidden={limit !== undefined && index >= limit} />
+		))}
+	</div>
+</div>
+
+<script>
+	import { initThemeFilter } from '../../scripts/theme-filter';
+
+	document.querySelectorAll<HTMLElement>('[data-theme-grid]').forEach(initThemeFilter);
+</script>

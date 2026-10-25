@@ -1,0 +1,101 @@
+---
+/**
+ * Decorative phone showing an invitation cover.
+ * - `theme` uses a Satamu preset (hero): `cream` is the full front phone, `navy` and `coral` the tilted ones behind it.
+ * - `palette` colours the cover from data instead (theme cards, see src/data/themes.ts).
+ * - `size="sm"` scales everything down for grid cards; the width then follows the parent.
+ */
+import { cn } from '@/lib/utils';
+
+interface Palette {
+	/** CSS background of the screen (colour or gradient). */
+	screen: string;
+	text: string;
+	/** CSS background of the oval photo placeholder. */
+	photo: string;
+}
+
+interface Props {
+	theme?: 'cream' | 'navy' | 'coral';
+	palette?: Palette;
+	size?: 'md' | 'sm';
+	label: string;
+	first: string;
+	second: string;
+	date: string;
+	/** Front phone only: greeting, guest name and open button. */
+	guest?: { to: string; name: string; open: string };
+	class?: string;
+}
+
+const { theme = 'cream', palette, size = 'md', label, first, second, date, guest, class: className } = Astro.props;
+const screens = {
+	cream: 'bg-[linear-gradient(180deg,var(--secondary)_0%,var(--card)_55%,var(--accent)_100%)] text-navy',
+	navy: 'bg-navy text-cream',
+	coral: 'bg-primary text-primary-foreground',
+} as const;
+const photos = {
+	cream: 'bg-[radial-gradient(circle_at_40%_30%,var(--accent),var(--primary)_85%)] text-primary-foreground',
+	navy: 'bg-white/15',
+	coral: 'bg-white/15',
+} as const;
+const sizes = {
+	md: {
+		frame: 'w-56 rounded-[2.5rem] border-[7px]',
+		screen: 'rounded-[2rem] px-5 pt-10 pb-6',
+		notch: 'top-2 h-5 w-20',
+		label: 'text-[0.55rem]',
+		photo: 'mt-4 h-32 w-24 text-2xl',
+		name: 'text-3xl',
+		nameGap: 'mt-4',
+		amp: 'text-lg',
+		date: 'mt-2 text-[0.6rem]',
+	},
+	sm: {
+		frame: 'w-full rounded-[1.75rem] border-[5px]',
+		// Small covers centre their content so the screen does not look empty.
+		screen: 'justify-center rounded-[1.4rem] px-3 py-6',
+		notch: 'top-1.5 h-3.5 w-12',
+		label: 'text-[0.45rem]',
+		photo: 'mt-3 h-24 w-[4.5rem] text-lg',
+		name: 'text-xl',
+		nameGap: 'mt-3',
+		amp: 'text-sm',
+		date: 'mt-2 text-[0.5rem]',
+	},
+} as const;
+const s = sizes[size];
+// Font-size classes also set line-height, so cn() drops an earlier leading-*: keep leading-* after the size.
+---
+
+<div class={cn('border-navy bg-navy shadow-[0_30px_60px_-20px_rgb(16_42_67/45%)]', s.frame, className)}>
+	<div
+		class={cn('relative flex aspect-[9/19] flex-col items-center overflow-hidden text-center', s.screen, !palette && screens[theme])}
+		style={palette && { background: palette.screen, color: palette.text }}
+	>
+		<span class={cn('bg-navy absolute left-1/2 -translate-x-1/2 rounded-full', s.notch)}></span>
+		<p class={cn('font-bold tracking-[0.2em] uppercase opacity-80', s.label)}>{label}</p>
+		{/* Photo placeholder: soft oval with the couple's initials. */}
+		<div
+			class={cn('grid place-items-center rounded-[50%]', s.photo, !palette && photos[theme])}
+			style={palette && { background: palette.photo }}
+		>
+			<span class="font-display italic">
+				{first[0]}&amp;{second[0]}
+			</span>
+		</div>
+		<p class={cn('font-display font-semibold italic', s.nameGap, s.name, 'leading-tight')}>{first}</p>
+		<p class={cn('font-display font-medium italic opacity-70', s.amp)}>&amp;</p>
+		<p class={cn('font-display font-semibold italic', s.name, 'leading-tight')}>{second}</p>
+		<p class={cn('font-semibold tracking-[0.12em] uppercase opacity-75', s.date)}>{date}</p>
+		{guest && (
+			<>
+				<p class="mt-4 text-[0.55rem] tracking-[0.18em] uppercase opacity-60">{guest.to}</p>
+				<p class="mt-1 text-xs font-semibold">{guest.name}</p>
+				<span class="bg-navy text-cream mt-auto rounded-full px-4 py-2 text-[0.55rem] font-bold tracking-[0.14em] uppercase">
+					{guest.open}
+				</span>
+			</>
+		)}
+	</div>
+</div>
