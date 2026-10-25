@@ -15,6 +15,8 @@ Website statis Astro dengan halaman home (`/`) dan katalog tema (`/themes/`):
 - **Footer** (`SiteFooter`): gelap seperti Prasetya Webworks: logo putih (`site.logoOnDark`), tagline, ikon sosial media (Font Awesome brands, `site.social` masih placeholder), menu yang sama dengan header, kontak WhatsApp dan tautan ke Prasetya Webworks, lalu baris hak cipta dan "Kembali ke atas".
 - Semua tautan menu sudah punya section tujuan. Menu Keistimewaan (`#features`) dihapus sampai section-nya dibuat. Push ke `main` di-deploy otomatis ke cPanel (lihat [deployment.md](deployment.md)).
 
+SEO: judul "Satamu by Prasetya Webworks - Jasa Bikin Undangan Website Digital", deskripsi, Open Graph, favicon dan JSON-LD (lihat [ADR 0003](decisions/0003-seo-metadata.md)).
+
 Gaya memakai Tailwind CSS v4 dan komponen shadcn/ui (React). Komponen React tanpa `client:*` dirender menjadi HTML saat build, jadi halaman tetap tanpa JavaScript. Warna tema shadcn diambil dari logo Satamu di `src/styles/global.css`. Lihat [ADR 0002](decisions/0002-tailwind-shadcn.md). Bahasa visual (warna, tipografi, spacing, komponen) ada di [design.md](design.md).
 
 ## Rencana

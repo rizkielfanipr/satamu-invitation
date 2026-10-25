@@ -6,6 +6,8 @@ export const site = {
 	logo: '/images/satamu-logo-flat.svg',
 	/** White-text version for dark backgrounds such as the footer. */
 	logoOnDark: '/images/satamu-logo-white.svg',
+	/** 1200×630 preview image for search results and shared links (Open Graph). */
+	ogImage: '/images/og-image.png',
 	/** Social profiles shown in the footer, in this order. Placeholders: replace with the real Satamu profile URLs. */
 	social: [
 		{ network: 'Instagram', icon: 'fa-instagram', url: 'https://www.instagram.com/' },

@@ -6,16 +6,43 @@ import HeroSection from './HeroSection.astro';
 import ThemesSection from './ThemesSection.astro';
 import PricingSection from './PricingSection.astro';
 import FaqSection from './FaqSection.astro';
-import { type Locale } from '../../i18n/content';
+import { content, type Locale } from '../../i18n/content';
+import { site } from '../../config/site';
 
 interface Props {
 	locale: Locale;
 }
 
 const { locale } = Astro.props;
+const t = content[locale];
+
+// schema.org data so search engines know the business, what it offers and at what price.
+const url = new URL('/', Astro.site).href;
+const structuredData = [
+	{ '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url, inLanguage: locale },
+	{
+		'@context': 'https://schema.org',
+		'@type': 'ProfessionalService',
+		name: `${site.name} by ${site.parent.name}`,
+		url,
+		description: t.meta.description,
+		logo: new URL('/favicon.png', Astro.site).href,
+		image: new URL(site.ogImage, Astro.site).href,
+		telephone: `+${site.whatsapp}`,
+		areaServed: { '@type': 'Country', name: 'Indonesia' },
+		parentOrganization: { '@type': 'Organization', name: site.parent.name, url: site.parent.url },
+		makesOffer: t.packages.items.map((item) => ({
+			'@type': 'Offer',
+			name: item.name,
+			description: item.tagline,
+			price: item.price.replace(/\D/g, ''),
+			priceCurrency: 'IDR',
+		})),
+	},
+];
 ---
 
-<Layout lang={locale}>
+<Layout lang={locale} structuredData={structuredData}>
 	<SiteHeader locale={locale} />
 	<main id="top">
 		<HeroSection locale={locale} />

@@ -5,9 +5,10 @@
 export const content = {
 	id: {
 		meta: {
-			title: 'Satamu - Undangan Digital yang Menyambut Setiap Tamu',
+			title: 'Satamu by Prasetya Webworks - Jasa Bikin Undangan Website Digital',
 			description:
-				'Undangan digital mulai Rp49.000 dengan nama tiap tamu di sampulnya dan lokasi acara sekali ketuk. Dirangkai tim Satamu, dikirim lewat WhatsApp.',
+				'Jasa bikin undangan website digital mulai Rp49.000. Pilih tema, kirim detail acara, dan bagikan undangan dengan nama tiap tamu di sampulnya lewat WhatsApp.',
+			imageAlt: 'Satamu - undangan digital mulai Rp49.000',
 		},
 		nav: {
 			label: 'Navigasi utama',
@@ -121,7 +122,7 @@ export const content = {
 			],
 		},
 		catalog: {
-			metaTitle: 'Koleksi Tema Undangan Digital - Satamu',
+			metaTitle: 'Koleksi Tema Undangan Digital - Satamu by Prasetya Webworks',
 			metaDescription:
 				'Semua tema undangan digital Satamu: elegan, floral, modern, minimalis, dan rustik. Pilih temanya, kami sesuaikan dengan acaramu.',
 			title: 'Semua',
