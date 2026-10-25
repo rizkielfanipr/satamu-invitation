@@ -46,6 +46,7 @@ Satamu follows the same conventions as `../prasetya-webworks`. Details and reaso
 ### Git
 
 - Conventional Commits (`feat:`, `fix:`, `refactor:`, `style:`, `docs:`, `ci:`, `chore:`).
+- Pushing to `main` deploys to production (`satamu.prasetyawebworks.web.id`).
 
 ## Documentation
 

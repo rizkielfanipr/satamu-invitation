@@ -19,4 +19,4 @@ Satamu (undangan digital) punya pembeli, nada bahasa, produk dan alur yang berbe
 
 - ✅ Brand, desain dan rilis Satamu tidak bergantung pada Prasetya Webworks.
 - ⚠️ Konvensi kode perlu dijaga sama secara manual di kedua repo.
-- ⚠️ Deploy otomatis belum ada sampai hosting subdomain disiapkan.
+- ✅ Deploy otomatis ke subdomain di cPanel memakai pola dan deploy key yang sama dengan prasetya-webworks.

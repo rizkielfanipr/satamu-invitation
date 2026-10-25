@@ -1,0 +1,63 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cpanel-satamu
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Formatting (Prettier), lint (ESLint + Stylelint) and types (astro check). Any failure stops the deploy.
+      - name: Validate
+        run: npm run validate
+
+      - name: Build
+        run: npm run build
+
+      # Pull requests only validate and build; main deploys.
+      - name: Upload to cPanel via SSH
+        if: github.event_name != 'pull_request'
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          if [ -z "$SSH_PRIVATE_KEY" ]; then
+            echo "::error::Secret SSH_PRIVATE_KEY is missing or empty"
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if ! ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null; then
+            echo "::error::SSH_PRIVATE_KEY is not a valid private key (copy the whole file, BEGIN to END lines)"
+            exit 1
+          fi
+          echo "server.griv.co.id ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC2d7PWQgD63Asf8MmFPp7ViTz3QGWHX1b+7l8hU/XCZ" > ~/.ssh/known_hosts
+          # The subdomain folder holds cPanel-managed files (PHP handler, SSL validation); excluded files are never deleted.
+          if ! out=$(rsync -rlz --delete --chmod=D755,F644 \
+            --exclude='.htaccess' --exclude='php.ini' --exclude='.user.ini' --exclude='.well-known/' \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes -o ConnectTimeout=30" \
+            dist/ prasetya@server.griv.co.id:public_html/satamu.prasetyawebworks.web.id/ 2>&1); then
+            echo "$out"
+            echo "::error::rsync failed: $(echo "$out" | tail -3 | tr '\n' ' ')"
+            exit 1
+          fi
+          echo "$out"

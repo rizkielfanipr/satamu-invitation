@@ -2,7 +2,7 @@
 
 ## Sekarang
 
-Website statis Astro dengan satu halaman "segera hadir": logo, judul, deskripsi dan tombol tanya lewat WhatsApp. Belum ada deploy otomatis; CI hanya menjalankan `npm run validate` dan `npm run build`.
+Website statis Astro dengan satu halaman "segera hadir": logo, judul, deskripsi dan tombol tanya lewat WhatsApp. Push ke `main` di-deploy otomatis ke cPanel (lihat [deployment.md](deployment.md)).
 
 ## Rencana
 
