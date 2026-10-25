@@ -1,0 +1,7 @@
+dist/
+.astro/
+node_modules/
+package-lock.json
+public/
+# Documentation is prose; tables stay hand-aligned.
+*.md

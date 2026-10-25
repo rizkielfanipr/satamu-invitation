@@ -1,0 +1,41 @@
+---
+import '../styles/global.css';
+import { content, type Locale } from '../i18n/content';
+
+interface Props {
+	title?: string;
+	description?: string;
+	lang?: Locale;
+}
+
+const { lang = 'id' } = Astro.props;
+const meta = content[lang].meta;
+const { title = meta.title, description = meta.description } = Astro.props;
+// Search engines and social previews need absolute URLs; `site` is set in astro.config.mjs.
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#fffaf6" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,800;1,600&display=swap" rel="stylesheet" />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Satamu" />
+		<meta property="og:locale" content="id_ID" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>

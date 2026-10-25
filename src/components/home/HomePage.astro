@@ -1,0 +1,19 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteFooter from '../layout/SiteFooter.astro';
+import HeroSection from './HeroSection.astro';
+import { type Locale } from '../../i18n/content';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<Layout lang={locale}>
+	<main id="top">
+		<HeroSection locale={locale} />
+	</main>
+	<SiteFooter locale={locale} />
+</Layout>

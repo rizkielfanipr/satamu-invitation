@@ -1,0 +1,44 @@
+/* Design tokens taken from the Satamu logo (public/images/satamu-logo-flat.svg). */
+:root {
+	--navy: #102a43;
+	--coral: #ff6542;
+	--slate: #526779;
+	--cream: #fff7f2;
+	--background: #fffaf6;
+	--foreground: var(--navy);
+	--muted: var(--slate);
+	--primary: var(--coral);
+	--primary-foreground: #ffffff;
+	--border: #f1e2d9;
+	--radius: 1rem;
+	--font-sans: 'Nunito Sans', 'Avenir Next', Avenir, system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	color: var(--foreground);
+	background: var(--background);
+	font-family: var(--font-sans);
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* Shared vertical rhythm for page sections. */
+.section-pad {
+	padding: clamp(4rem, 6vw, 6.5rem) clamp(1.5rem, 4vw, 2.5rem);
+}

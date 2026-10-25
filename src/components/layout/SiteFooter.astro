@@ -1,0 +1,41 @@
+---
+import { content, type Locale } from '../../i18n/content';
+import { site } from '../../config/site';
+
+interface Props {
+	locale: Locale;
+}
+
+const t = content[Astro.props.locale].footer;
+---
+
+<footer class="site-footer">
+	<p>
+		{t.by} <a href={site.parent.url}>{site.parent.name}</a>.
+	</p>
+	<p>
+		© {new Date().getFullYear()} {site.name}. {t.rights}
+	</p>
+</footer>
+
+<style>
+	.site-footer {
+		padding: 1.75rem clamp(1.5rem, 4vw, 2.5rem);
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.5rem 2rem;
+		color: var(--muted);
+		border-top: 1px solid var(--border);
+		font-size: 0.85rem;
+	}
+
+	.site-footer p {
+		margin: 0;
+	}
+
+	.site-footer a {
+		color: var(--foreground);
+		font-weight: 700;
+	}
+</style>
