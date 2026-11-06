@@ -1,0 +1,124 @@
+---
+/**
+ * Native modal <dialog> shown after a valid order form: the summary, then "Konsultasi dulu" (WhatsApp) or
+ * "Langsung bayar" (Prasetya Platform → Duitku). showModal() gives the focus trap and Escape; the order script
+ * fills the summary, the price from the platform, and returns focus to the submit button on close.
+ * Without PUBLIC_PLATFORM_API_URL the payment part is not rendered at all.
+ */
+import { X, MessageCircle, CreditCard, CircleAlert } from 'lucide-react';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { content, type Locale } from '../../i18n/content';
+import { onlinePayment } from '../../config/site';
+
+interface Props {
+	locale: Locale;
+}
+
+const t = content[Astro.props.locale].order.dialog;
+const rowClass = 'grid grid-cols-[minmax(0,6rem)_minmax(0,1fr)] gap-3 py-2.5';
+const termClass = 'text-muted-foreground text-sm font-semibold';
+const detailClass = 'text-sm font-semibold break-words';
+---
+
+<dialog
+	class="bg-card text-foreground backdrop:bg-navy/50 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-lg border p-0 shadow-[0_24px_60px_-24px_rgb(16_42_67/45%)]"
+	aria-labelledby="order-dialog-title"
+	aria-describedby="order-dialog-description"
+	data-order-dialog
+	data-online-payment={String(onlinePayment)}
+>
+	<div class="grid gap-5 p-5 md:p-6">
+		<div class="flex items-start justify-between gap-4">
+			<div>
+				<h2 class="font-display text-xl leading-tight font-semibold outline-none" id="order-dialog-title" tabindex="-1">
+					{t.title}
+				</h2>
+				<p class="text-muted-foreground mt-1 text-sm" id="order-dialog-description">
+					{t.description}
+				</p>
+			</div>
+			<button
+				class={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'size-10 shrink-0 rounded-[12px]')}
+				type="button"
+				aria-label={t.close}
+				data-order-dialog-close
+			>
+				<X className="size-5" aria-hidden="true" />
+			</button>
+		</div>
+
+		<dl class="divide-border border-border divide-y border-y">
+			<div class={rowClass}>
+				<dt class={termClass}>{t.theme}</dt>
+				<dd class={detailClass} data-summary="theme"></dd>
+			</div>
+			<div class={rowClass}>
+				<dt class={termClass}>{t.package}</dt>
+				<dd class={detailClass} data-summary="package"></dd>
+			</div>
+			<div class={rowClass}>
+				<dt class={termClass}>{t.event}</dt>
+				<dd class={detailClass} data-summary="event"></dd>
+			</div>
+			{onlinePayment && (
+				<div class={rowClass}>
+					<dt class={termClass}>{t.price}</dt>
+					<dd class="font-display text-lg leading-tight font-bold" aria-live="polite" data-summary="price" />
+				</div>
+			)}
+		</dl>
+
+		{onlinePayment ? (
+			<ul class="text-muted-foreground grid list-disc gap-1.5 pl-5 text-sm leading-[1.5]">
+				<li>{t.priceSource}</li>
+				<li>{t.workStarts}</li>
+				<li>{t.gateway}</li>
+				<li>{t.consultHint}</li>
+			</ul>
+		) : (
+			<p class="text-muted-foreground text-sm leading-[1.5]">{t.offline}</p>
+		)}
+
+		{/* Payment problems; role=alert so they are announced when shown. */}
+		<p
+			class="border-destructive/40 text-destructive flex items-start gap-2 rounded-[12px] border p-3 text-sm font-semibold"
+			role="alert"
+			data-order-dialog-error
+			hidden
+		>
+			<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+			<span data-error-text></span>
+		</p>
+
+		<div class="grid gap-3 sm:grid-cols-2">
+			<a
+				class={cn(
+					buttonVariants({ variant: onlinePayment ? 'outline' : 'default' }),
+					'h-12 gap-2 rounded-lg text-sm font-semibold',
+					onlinePayment ? 'hover:border-primary/45' : 'shadow-brand sm:col-span-2',
+				)}
+				href="#"
+				target="_blank"
+				rel="noopener"
+				data-order-consult
+			>
+				<MessageCircle className="size-4" aria-hidden="true" />
+				{t.consult}
+			</a>
+			{onlinePayment && (
+				<button
+					class={cn(buttonVariants(), 'shadow-brand h-12 gap-2 rounded-lg text-sm font-semibold disabled:shadow-none')}
+					type="button"
+					disabled
+					data-order-pay
+					data-label={t.pay}
+					data-busy-label={t.paying}
+				>
+					<CreditCard className="size-4" aria-hidden="true" />
+					<span data-order-pay-label>{t.pay}</span>
+				</button>
+			)}
+		</div>
+	</div>
+</dialog>

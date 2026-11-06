@@ -1,0 +1,219 @@
+---
+/**
+ * /order/: theme, package, contact, and event details, then a dialog to consult on WhatsApp or pay through
+ * Prasetya Platform. CTAs link here with ?theme=<code> and/or ?package=<code>; the script validates them.
+ */
+import { ArrowRight, CircleAlert } from 'lucide-react';
+import Layout from '../../layouts/Layout.astro';
+import SiteHeader from '../layout/SiteHeader.astro';
+import SiteFooter from '../layout/SiteFooter.astro';
+import SectionIntro from '../ui/SectionIntro.astro';
+import OrderField from './OrderField.astro';
+import OrderChoiceDialog from './OrderChoiceDialog.astro';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { describedBy } from '@/lib/form';
+import { content, type Locale } from '../../i18n/content';
+import { site } from '../../config/site';
+import { themes } from '../../data/themes';
+import { packagesFor } from '../../data/packages';
+import { eventTypes } from '../../data/event-types';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = content[locale].order;
+const f = t.fields;
+const packages = packagesFor(locale);
+const themeLabel = (theme: (typeof themes)[number]) => f.themeOption.replace('{name}', theme.name).replace('{code}', theme.code);
+const [consentBefore, consentAfter] = f.consent.split('{link}');
+
+// What the script needs to build the summary and messages; data, not globals.
+const copy = {
+	site: site.name,
+	errors: t.errors,
+	themes: Object.fromEntries(themes.map((theme) => [theme.code, themeLabel(theme)])),
+	packages: Object.fromEntries(packages.map((item) => [item.code, item.name])),
+	eventTypes: t.eventTypes,
+	whatsapp: t.whatsapp,
+	dialog: {
+		priceLoading: t.dialog.priceLoading,
+		priceUnavailable: t.dialog.priceUnavailable,
+		payUnavailable: t.dialog.payUnavailable,
+		failures: t.dialog.failures,
+	},
+};
+const sectionClass = 'bg-card grid gap-5 rounded-lg border p-5 md:p-6';
+const legendClass = 'font-display mb-5 text-lg leading-snug font-semibold';
+---
+
+<Layout lang={locale} title={t.metaTitle} description={t.metaDescription}>
+	<SiteHeader locale={locale} onHome={false} />
+	<main class="bg-satamu-glow px-6 pt-32 pb-20 md:px-8 lg:px-10 lg:pt-36" id="top">
+		<div class="mx-auto max-w-3xl">
+			<SectionIntro id="order-title" level="h1" eyebrow={t.eyebrow} title={t.title} emphasis={t.emphasis} description={t.description} />
+
+			<form class="grid gap-6" novalidate aria-labelledby="order-title" data-order-form data-copy={JSON.stringify(copy)}>
+				{/* Announced once per failed submit; each field also shows its own message. */}
+				<p
+					class="border-destructive/40 bg-card text-destructive flex items-start gap-2 rounded-lg border p-4 text-sm font-semibold"
+					role="alert"
+					data-order-error-summary
+					hidden
+				>
+					<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+					<span data-error-text></span>
+				</p>
+
+				<div class={sectionClass}>
+					<fieldset class="grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-2">
+						<legend class={legendClass}>{t.sections.choice}</legend>
+						<OrderField id="order-theme" field="theme" label={f.theme}>
+							<NativeSelect id="order-theme" name="theme" required aria-describedby={describedBy('order-theme')}>
+								<NativeSelectOption value="">{f.themePlaceholder}</NativeSelectOption>
+								{themes.map((theme) => (
+									<NativeSelectOption value={theme.code}>{themeLabel(theme)}</NativeSelectOption>
+								))}
+							</NativeSelect>
+						</OrderField>
+						<OrderField id="order-package" field="package" label={f.package}>
+							<NativeSelect id="order-package" name="package" required aria-describedby={describedBy('order-package')}>
+								<NativeSelectOption value="">{f.packagePlaceholder}</NativeSelectOption>
+								{packages.map((item) => (
+									<NativeSelectOption value={item.code}>{item.name}</NativeSelectOption>
+								))}
+							</NativeSelect>
+						</OrderField>
+					</fieldset>
+				</div>
+
+				<div class={sectionClass}>
+					<fieldset class="grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-2">
+						<legend class={legendClass}>{t.sections.contact}</legend>
+						<OrderField id="order-name" field="name" label={f.name} class="md:col-span-2">
+							<Input
+								id="order-name"
+								name="name"
+								autoComplete="name"
+								required
+								maxLength={255}
+								aria-describedby={describedBy('order-name')}
+							/>
+						</OrderField>
+						<OrderField id="order-email" field="email" label={f.email} hint={f.emailHint}>
+							<Input
+								id="order-email"
+								name="email"
+								type="email"
+								autoComplete="email"
+								inputMode="email"
+								required
+								maxLength={255}
+								aria-describedby={describedBy('order-email', f.emailHint)}
+							/>
+						</OrderField>
+						<OrderField id="order-whatsapp" field="whatsapp" label={f.whatsapp} hint={f.whatsappHint}>
+							<Input
+								id="order-whatsapp"
+								name="whatsapp"
+								type="tel"
+								autoComplete="tel"
+								inputMode="tel"
+								required
+								maxLength={20}
+								aria-describedby={describedBy('order-whatsapp', f.whatsappHint)}
+							/>
+						</OrderField>
+					</fieldset>
+				</div>
+
+				<div class={sectionClass}>
+					<fieldset class="grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-2">
+						<legend class={legendClass}>{t.sections.event}</legend>
+						<OrderField id="order-event-type" field="eventType" label={f.eventType}>
+							<NativeSelect id="order-event-type" name="eventType" required aria-describedby={describedBy('order-event-type')}>
+								<NativeSelectOption value="">{f.eventTypePlaceholder}</NativeSelectOption>
+								{eventTypes.map((code) => (
+									<NativeSelectOption value={code}>{t.eventTypes[code]}</NativeSelectOption>
+								))}
+							</NativeSelect>
+						</OrderField>
+						<OrderField id="order-event-date" field="eventDate" label={f.eventDate}>
+							<Input id="order-event-date" name="eventDate" type="date" required aria-describedby={describedBy('order-event-date')} />
+						</OrderField>
+						<OrderField id="order-notes" field="notes" label={f.notes} optional={f.optional} hint={f.notesHint} class="md:col-span-2">
+							<Textarea
+								id="order-notes"
+								name="notes"
+								maxLength={2000}
+								rows={4}
+								aria-describedby={describedBy('order-notes', f.notesHint)}
+							/>
+						</OrderField>
+					</fieldset>
+				</div>
+
+				<div class="grid gap-2">
+					<div class="flex items-start gap-3">
+						<input
+							class="accent-primary border-input focus-visible:ring-ring/50 aria-invalid:outline-destructive mt-0.5 size-5 shrink-0 rounded-[6px] outline-offset-2 focus-visible:ring-[3px] aria-invalid:outline-2"
+							id="order-consent"
+							name="consent"
+							type="checkbox"
+							required
+							aria-describedby="order-consent-error"
+						/>
+						<label class="text-sm leading-[1.6]" for="order-consent">
+							{consentBefore}
+							<a
+								class="text-foreground hover:text-primary font-semibold underline underline-offset-4"
+								href="/privacy/"
+								target="_blank"
+								rel="noopener"
+							>
+								{f.consentLink}
+							</a>
+							{consentAfter}
+						</label>
+					</div>
+					<p
+						id="order-consent-error"
+						class="text-destructive flex items-start gap-1.5 pl-8 text-sm font-semibold"
+						data-error-for="consent"
+						hidden
+					>
+						<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+						<span data-error-text></span>
+					</p>
+				</div>
+
+				<button
+					class={cn(
+						buttonVariants({ size: 'lg' }),
+						'shadow-brand h-12 w-full gap-3 rounded-lg px-6 text-sm font-semibold sm:w-fit sm:justify-self-end',
+					)}
+					type="submit"
+					data-order-submit
+				>
+					{t.submit}
+					<ArrowRight className="size-4" aria-hidden="true" />
+				</button>
+			</form>
+		</div>
+	</main>
+	<SiteFooter locale={locale} onHome={false} />
+	<OrderChoiceDialog locale={locale} />
+</Layout>
+
+<script>
+	import { initOrderForm } from '../../scripts/order-page';
+
+	const form = document.querySelector<HTMLFormElement>('[data-order-form]');
+	const dialog = document.querySelector<HTMLDialogElement>('[data-order-dialog]');
+	if (form && dialog) initOrderForm(form, dialog);
+</script>

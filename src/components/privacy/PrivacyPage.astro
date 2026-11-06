@@ -1,0 +1,46 @@
+---
+/** /privacy/: order terms and privacy notice linked from the order form's consent. Text: `privacy` in content.ts. */
+import Layout from '../../layouts/Layout.astro';
+import SiteHeader from '../layout/SiteHeader.astro';
+import SiteFooter from '../layout/SiteFooter.astro';
+import SectionIntro from '../ui/SectionIntro.astro';
+import { content, type Locale } from '../../i18n/content';
+import { site } from '../../config/site';
+import { whatsappUrl } from '../../scripts/whatsapp';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = content[locale].privacy;
+---
+
+<Layout lang={locale} title={t.metaTitle} description={t.metaDescription}>
+	<SiteHeader locale={locale} onHome={false} />
+	<main class="bg-satamu-glow px-6 pt-32 pb-20 md:px-8 lg:px-10 lg:pt-36" id="top">
+		<div class="mx-auto max-w-3xl">
+			<SectionIntro id="privacy-title" level="h1" eyebrow={t.eyebrow} title={t.title} emphasis={t.emphasis} />
+			<div class="grid gap-5">
+				{t.sections.map((section) => (
+					<section class="bg-card rounded-lg border p-5 md:p-6">
+						<h2 class="font-display text-lg leading-snug font-semibold">{section.title}</h2>
+						{section.body.map((paragraph) => (
+							<p class="text-muted-foreground mt-3 text-[15px] leading-[1.7]">{paragraph}</p>
+						))}
+					</section>
+				))}
+			</div>
+			<a
+				class="text-foreground hover:text-primary mt-8 inline-flex items-center gap-2 text-sm font-semibold underline underline-offset-4"
+				href={whatsappUrl(content[locale].orderStatus.helpMessageGeneric.replace('{site}', site.name))}
+				target="_blank"
+				rel="noopener"
+			>
+				<i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>
+				{t.contact}
+			</a>
+		</div>
+	</main>
+	<SiteFooter locale={locale} onHome={false} />
+</Layout>

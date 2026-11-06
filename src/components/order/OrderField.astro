@@ -1,0 +1,45 @@
+---
+/**
+ * One labelled form field: label, the control (slot), an optional hint, and an error line the order script fills.
+ * The control must use `id`, and `aria-describedby={describedBy(id, hint)}` so hint and error are read with it.
+ */
+import { CircleAlert } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+
+interface Props {
+	/** id of the control; the hint and error derive their ids from it. */
+	id: string;
+	/** Key the order script uses for this field (data-error-for). */
+	field: string;
+	label: string;
+	hint?: string;
+	/** Text such as "(opsional)" shown after the label. */
+	optional?: string;
+	class?: string;
+}
+
+const { id, field, label, hint, optional, class: className } = Astro.props;
+---
+
+<div class:list={['grid content-start gap-2', className]}>
+	<Label htmlFor={id}>
+		{label}
+		{/* Astro drops plain spaces between inline parts, so the space travels inside the text. */}
+		{optional && <span class="text-muted-foreground font-normal">{` ${optional}`}</span>}
+	</Label>
+	<slot />
+	{hint && (
+		<p id={`${id}-hint`} class="text-muted-foreground text-sm leading-[1.43]">
+			{hint}
+		</p>
+	)}
+	<p
+		id={`${id}-error`}
+		class="text-destructive flex items-start gap-1.5 text-sm leading-[1.43] font-semibold"
+		data-error-for={field}
+		hidden
+	>
+		<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+		<span data-error-text></span>
+	</p>
+</div>

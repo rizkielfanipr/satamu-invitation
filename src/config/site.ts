@@ -16,4 +16,13 @@ export const site = {
 	],
 	/** Satamu is a product of Prasetya Webworks ("by prasetya webworks" in the logo). */
 	parent: { name: 'Prasetya Webworks', url: 'https://prasetyawebworks.web.id' },
+	/**
+	 * Prasetya Platform API origin, read at build time from PUBLIC_PLATFORM_API_URL (for example
+	 * https://platform.prasetyawebworks.web.id). Empty turns online payment off: the order form then offers
+	 * WhatsApp consultation only. The platform owns prices and payment status; see ADR 0004.
+	 */
+	platformApiUrl: ((import.meta.env.PUBLIC_PLATFORM_API_URL ?? '') as string).trim().replace(/\/+$/, ''),
 } as const;
+
+/** Whether this build offers "Langsung bayar". */
+export const onlinePayment = site.platformApiUrl !== '';

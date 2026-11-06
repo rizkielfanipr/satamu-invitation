@@ -66,7 +66,7 @@ const linkClass = 'transition-colors hover:text-white motion-reduce:transition-n
 				<li>
 					<a
 						class:list={[linkClass, 'inline-flex items-center gap-3']}
-						href={whatsappUrl(all.hero.message.replace('{site}', site.name))}
+						href={whatsappUrl(t.message.replace('{site}', site.name))}
 						target="_blank"
 						rel="noopener"
 					>
@@ -91,8 +91,13 @@ const linkClass = 'transition-colors hover:text-white motion-reduce:transition-n
 		<span>
 			© {new Date().getFullYear()} {site.name}. {t.rights}
 		</span>
-		<a class={linkClass} href="#top">
-			{t.back} ↑
-		</a>
+		<span class="flex flex-wrap gap-x-6 gap-y-3">
+			<a class={linkClass} href="/privacy/">
+				{t.privacy}
+			</a>
+			<a class={linkClass} href="#top">
+				{t.back} ↑
+			</a>
+		</span>
 	</div>
 </footer>

@@ -4,19 +4,15 @@ import SectionIntro from '../ui/SectionIntro.astro';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { content, type Locale } from '../../i18n/content';
-import { site } from '../../config/site';
-import { whatsappUrl } from '../../scripts/whatsapp';
+import { packagesFor } from '../../data/packages';
 
 interface Props {
 	locale: Locale;
 }
 
 const t = content[Astro.props.locale].packages;
-const items = t.items.map((item) => ({
-	...item,
-	popular: 'popular' in item && item.popular,
-	href: whatsappUrl(t.selectMessage.replace('{site}', site.name).replace('{name}', item.name).replace('{price}', item.price)),
-}));
+// "Pilih Paket" opens the order form with this package chosen.
+const items = packagesFor(Astro.props.locale).map((item) => ({ ...item, href: `/order/?package=${item.code}` }));
 ---
 
 <section class="scroll-mt-20 px-6 py-16 md:px-8 md:py-24 lg:px-10" id="packages" aria-labelledby="packages-title">
@@ -57,8 +53,7 @@ const items = t.items.map((item) => ({
 							item.popular ? 'shadow-brand' : 'hover:border-primary/45',
 						)}
 						href={item.href}
-						target="_blank"
-						rel="noopener"
+						aria-label={t.selectLabel.replace('{name}', item.name)}
 					>
 						{t.select}
 					</a>

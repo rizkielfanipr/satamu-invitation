@@ -1,10 +1,9 @@
 ---
-import { Menu } from 'lucide-react';
+import { ArrowRight, Menu } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { content, type Locale } from '../../i18n/content';
 import { site } from '../../config/site';
-import { whatsappUrl } from '../../scripts/whatsapp';
 
 interface Props {
 	locale: Locale;
@@ -16,7 +15,7 @@ const { locale, onHome = true } = Astro.props;
 const all = content[locale];
 const base = onHome ? '' : '/';
 const t = all.nav;
-const orderHref = whatsappUrl(all.hero.message.replace('{site}', site.name));
+const orderHref = '/order/';
 ---
 
 {/* Transparent at the top of the page; once scrolled (data-scrolled) the bar floats with a border and background. */}
@@ -41,11 +40,9 @@ const orderHref = whatsappUrl(all.hero.message.replace('{site}', site.name));
 			<a
 				class={cn(buttonVariants(), 'shadow-brand hidden h-10 gap-2 rounded-[12px] px-5 text-sm font-semibold sm:inline-flex')}
 				href={orderHref}
-				target="_blank"
-				rel="noopener"
 			>
-				<i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>
 				{t.order}
+				<ArrowRight className="size-4" aria-hidden="true" />
 			</a>
 
 			{/* Native <details> menu: works without JavaScript. */}
@@ -62,14 +59,9 @@ const orderHref = whatsappUrl(all.hero.message.replace('{site}', site.name));
 							{link.label}
 						</a>
 					))}
-					<a
-						class={cn(buttonVariants(), 'mt-1 h-10 gap-2 rounded-[12px] text-sm font-semibold')}
-						href={orderHref}
-						target="_blank"
-						rel="noopener"
-					>
-						<i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>
+					<a class={cn(buttonVariants(), 'mt-1 h-10 gap-2 rounded-[12px] text-sm font-semibold')} href={orderHref}>
 						{t.order}
+						<ArrowRight className="size-4" aria-hidden="true" />
 					</a>
 				</div>
 			</details>

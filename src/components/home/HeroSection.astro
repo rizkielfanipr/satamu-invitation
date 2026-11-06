@@ -1,11 +1,9 @@
 ---
-import { MessageCircleHeart, Palette, PenLine, Send } from 'lucide-react';
+import { ArrowRight, MessageCircleHeart, Palette, PenLine, Send } from 'lucide-react';
 import PhoneMockup from './PhoneMockup.astro';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { content, type Locale } from '../../i18n/content';
-import { site } from '../../config/site';
-import { whatsappUrl } from '../../scripts/whatsapp';
 
 interface Props {
 	locale: Locale;
@@ -29,7 +27,8 @@ const stepIcons = [Palette, PenLine, Send];
 				<span class="font-medium italic">{`${t.connector} `}</span>
 				<em class="text-primary font-semibold italic">{t.emphasis}</em>
 			</h1>
-			<p class="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-label={`${t.pricePrefix} ${price}, ${t.priceSuffix}`}>
+			<p class="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+				<span class="sr-only">{`${t.pricePrefix} ${price}, ${t.priceSuffix}`}</span>
 				<span class="text-xs font-bold tracking-[0.14em] uppercase" aria-hidden="true">
 					{t.pricePrefix}
 				</span>
@@ -47,12 +46,10 @@ const stepIcons = [Palette, PenLine, Send];
 					buttonVariants({ size: 'lg' }),
 					'shadow-brand mt-8 h-12 gap-3 rounded-lg px-6 text-sm font-semibold hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
 				)}
-				href={whatsappUrl(t.message.replace('{site}', site.name))}
-				target="_blank"
-				rel="noopener"
+				href="/order/"
 			>
-				<i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i>
 				{t.primary}
+				<ArrowRight className="size-4" aria-hidden="true" />
 			</a>
 
 			<ol class="mt-12 grid gap-7" aria-label={t.stepsLabel}>
