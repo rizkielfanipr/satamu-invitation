@@ -165,6 +165,24 @@ Do not invent additional elevation levels.
 - Keyboard focus uses the coral ring and must not rely on color alone when an error exists.
 - Labels remain visible; placeholders do not replace labels.
 
+### Order form
+
+- Single column inside a `max-w-3xl` page; each group (Tema dan paket, Data pemesan, Data acara) is a white card with a `<fieldset>` and a Raleway 600 legend. Two field columns from `768px`.
+- Controls are `48px` tall with `16px` text (no zoom on iOS). Native `<select>` with a chevron, native date input, native checkbox with `accent-primary`.
+- Errors: `--destructive` text with an alert icon under the field, `aria-invalid` red border, and a summary card at the top that is announced (`role="alert"`). The first invalid field receives focus.
+- The submit button is the primary CTA, full width on phones and right-aligned from `640px`.
+
+### Order dialog
+
+- Native modal `<dialog>` (focus trap and Escape for free), white, `16px` radius, max `512px` wide, `16px` from the screen edges, navy backdrop at 50%.
+- Summary as a two-column `<dl>` divided by `--border` lines; the platform price in Raleway 700.
+- Two actions side by side from `640px`: **Konsultasi dulu** (outline) and **Langsung bayar** (primary). Without online payment only the consultation, as primary.
+
+### Status page
+
+- One white card with a `40px` state icon (coral for paid, pending, and retry; muted for the others), a Raleway 600 title, a muted description, and actions. A bordered footer row holds the invoice number and the WhatsApp help link.
+- The spinner of the loading state stops under reduced motion.
+
 ### Navigation
 
 - At the top of the page the header is transparent over the hero, full width, `80px` tall.
@@ -234,6 +252,8 @@ Current components:
 - `src/components/home/PhoneMockup.astro` (decorative invitation phone: `theme` = `cream` | `navy` | `coral` presets or a `palette` from data; `size` = `md` | `sm`)
 - `src/components/ui/SectionIntro.astro` (section heading, `level` = `h2` | `h1`)
 - `src/components/themes/ThemeGrid.astro`, `ThemeCard.astro` (theme filter, grid and card)
+- `src/components/ui/input.tsx`, `textarea.tsx`, `label.tsx`, `native-select.tsx` (shadcn/ui form primitives, written from the registry source because the CLI install is blocked by npm's install-script policy)
+- `src/components/order/OrderField.astro` (label, control slot, hint, error line), `OrderChoiceDialog.astro`, `OrderPage.astro`, `OrderStatusPage.astro`
 - Icons: `lucide-react`, rendered as static SVG in Astro
 
 ## Do
