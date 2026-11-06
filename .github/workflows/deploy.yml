@@ -40,8 +40,12 @@ jobs:
       - name: Browser tests
         run: npm run test:e2e
 
+      # Online payment is on only when the repository variable PUBLIC_PLATFORM_API_URL is set
+      # (Settings > Secrets and variables > Actions > Variables). Empty or unset: WhatsApp-only, which is also the rollback.
       - name: Build
         run: npm run build
+        env:
+          PUBLIC_PLATFORM_API_URL: ${{ vars.PUBLIC_PLATFORM_API_URL }}
 
       # Pull requests only validate and build; main deploys.
       - name: Upload to cPanel via SSH

@@ -237,4 +237,20 @@ test.describe('payment', () => {
 		await expect(dialog(page).getByRole('alert')).toContainText('Pembayaran belum dapat dibuat');
 		await expect(page).toHaveURL(/\/order\//);
 	});
+
+	test('an already paid order goes to the status page', async ({ page }) => {
+		await mockPlatform(page, (call) => {
+			if (call.path.endsWith('/checkout')) return fail('ORDER_ALREADY_PAID', 409);
+			if (call.path.endsWith('/payment-status'))
+				return ok({ invoice_number: 'SAT-202611-000001', order_status: 'CONFIRMED', payment_status: 'PAID', checkout_url: null });
+			return happyPlatform(call);
+		});
+		await page.goto('/order/?theme=T01&package=SAT-SPESIAL');
+		await fillOrder(page);
+		await page.getByRole('button', { name: 'Lanjutkan' }).click();
+		await dialog(page).getByRole('button', { name: 'Langsung bayar' }).click();
+
+		await expect(page).toHaveURL(`/order/status/?order=${REFERENCE}`);
+		await expect(page.getByRole('heading', { name: 'Pembayaran diterima' })).toBeVisible();
+	});
 });

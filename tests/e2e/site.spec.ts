@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
-import { dialog, expect, fillOrder, horizontalOverflow, mockPlatform, status, test } from './support';
+import { REFERENCE, dialog, expect, fillOrder, horizontalOverflow, mockPlatform, status, test } from './support';
 
-const pages = ['/', '/themes/', '/order/', '/privacy/'];
+const pages = ['/', '/themes/', '/order/', `/order/status/?order=${REFERENCE}`, '/privacy/'];
 const viewports = [
 	{ name: 'mobile', width: 360, height: 780 },
 	{ name: 'tablet', width: 768, height: 1024 },

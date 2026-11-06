@@ -1,0 +1,129 @@
+---
+/**
+ * /order/status/?order=<reference>: the return page from Duitku. It always asks Prasetya Platform for the status
+ * and never reads Duitku's query parameters (ADR 0004). One panel per state; src/scripts/order-status.ts shows one.
+ */
+import { CircleCheck, Clock, CloudOff, LoaderCircle, RotateCcw, SearchX, CircleX, CircleAlert, ArrowRight } from 'lucide-react';
+import Layout from '../../layouts/Layout.astro';
+import SiteHeader from '../layout/SiteHeader.astro';
+import SiteFooter from '../layout/SiteFooter.astro';
+import SectionIntro from '../ui/SectionIntro.astro';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { content, type Locale } from '../../i18n/content';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = content[locale].orderStatus;
+const views = [
+	{ key: 'loading', icon: LoaderCircle, tone: 'text-muted-foreground', spin: true },
+	{ key: 'paid', icon: CircleCheck, tone: 'text-primary' },
+	{ key: 'pending', icon: Clock, tone: 'text-primary' },
+	{ key: 'retry', icon: RotateCcw, tone: 'text-primary' },
+	{ key: 'closed', icon: CircleX, tone: 'text-muted-foreground' },
+	{ key: 'invalid', icon: SearchX, tone: 'text-muted-foreground' },
+	{ key: 'unavailable', icon: CloudOff, tone: 'text-muted-foreground' },
+] as const;
+const primary = cn(buttonVariants({ size: 'lg' }), 'shadow-brand h-12 gap-2 rounded-lg px-6 text-sm font-semibold');
+const outline = cn(buttonVariants({ variant: 'outline' }), 'hover:border-primary/45 h-12 gap-2 rounded-lg px-6 text-sm font-semibold');
+---
+
+<Layout lang={locale} title={t.metaTitle} description={t.metaDescription}>
+	<SiteHeader locale={locale} onHome={false} />
+	<main class="bg-satamu-glow px-6 pt-32 pb-20 md:px-8 lg:px-10 lg:pt-36" id="top">
+		<div class="mx-auto max-w-2xl">
+			<SectionIntro id="status-title" level="h1" eyebrow={t.eyebrow} title={t.title} emphasis={t.emphasis} />
+
+			<section class="bg-card grid gap-6 rounded-lg border p-5 md:p-8" aria-labelledby="status-title" data-order-status data-view="loading">
+				{/* Screen readers hear each change of state once; the panels themselves are not live. */}
+				<p class="sr-only" role="status" data-status-announce></p>
+
+				{views.map(({ key, icon: Icon, tone, ...rest }) => (
+					<div class="grid gap-4" data-status-view={key} hidden={key !== 'loading'}>
+						<Icon
+							className={cn('size-10', tone, 'spin' in rest && 'animate-spin motion-reduce:animate-none')}
+							strokeWidth={1.75}
+							aria-hidden="true"
+						/>
+						<div>
+							<h2 class="font-display text-2xl leading-tight font-semibold" data-status-title>
+								{t.views[key].title}
+							</h2>
+							<p class="text-muted-foreground mt-2 text-[15px] leading-[1.6]">{t.views[key].description}</p>
+						</div>
+						<div class="flex flex-wrap gap-3">
+							{key === 'pending' && (
+								<>
+									<a class={primary} href="#" data-status-resume hidden>
+										{t.resume}
+										<ArrowRight className="size-4" aria-hidden="true" />
+									</a>
+									<button class={outline} type="button" data-status-refresh>
+										{t.refresh}
+									</button>
+								</>
+							)}
+							{key === 'retry' && (
+								<button class={primary} type="button" data-status-retry data-label={t.retry} data-busy-label={t.retrying}>
+									<RotateCcw className="size-4" aria-hidden="true" />
+									<span data-status-retry-label>{t.retry}</span>
+								</button>
+							)}
+							{key === 'unavailable' && (
+								<button class={primary} type="button" data-status-refresh>
+									{t.refresh}
+								</button>
+							)}
+							{(key === 'closed' || key === 'invalid') && (
+								<a class={primary} href="/order/">
+									{t.newOrder}
+								</a>
+							)}
+							{(key === 'paid' || key === 'invalid') && (
+								<a class={outline} href="/">
+									{t.home}
+								</a>
+							)}
+						</div>
+						{key === 'retry' && (
+							<p class="text-destructive flex items-start gap-1.5 text-sm font-semibold" role="alert" data-status-retry-error hidden>
+								<CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+								{t.retryFailed}
+							</p>
+						)}
+					</div>
+				))}
+
+				<div class="border-border flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t pt-5">
+					<p class="text-sm" data-status-invoice-row hidden>
+						<span class="text-muted-foreground font-semibold">{`${t.invoice}: `}</span>
+						<strong class="font-semibold break-all" data-status-invoice></strong>
+					</p>
+					<a
+						class="text-foreground hover:text-primary inline-flex items-center gap-2 text-sm font-semibold underline underline-offset-4"
+						href="#"
+						target="_blank"
+						rel="noopener"
+						data-status-help
+						data-message={t.helpMessage}
+						data-message-generic={t.helpMessageGeneric}
+					>
+						<i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>
+						{t.help}
+					</a>
+				</div>
+			</section>
+		</div>
+	</main>
+	<SiteFooter locale={locale} onHome={false} />
+</Layout>
+
+<script>
+	import { initOrderStatus } from '../../scripts/order-status';
+
+	const root = document.querySelector<HTMLElement>('[data-order-status]');
+	if (root) initOrderStatus(root);
+</script>
