@@ -34,14 +34,13 @@ WordPress Multisite khusus undangan                  1 subsite = 1 undangan pela
 Tahapan:
 
 1. Landing lengkap: tema, fitur, paket dan harga, FAQ, pesan lewat WhatsApp (seperti Prasetya Webworks).
-2. Form order mengirim ke API Laravel, lalu pembayaran lewat payment gateway.
+2. Form order mengirim ke Prasetya Platform, lalu hosted checkout Duitku sesuai [rencana pembayaran](payment-checkout-plan.md) dan [ADR 0004](decisions/0004-online-payment-through-platform.md).
 3. Undangan dibuat manual dari admin panel, kemudian otomatis (plugin WordPress atau WP-CLI).
 
 ## Belum diputuskan
 
 - Alamat undangan pelanggan: subdomain Prasetya (misalnya `undangan.prasetyawebworks.web.id/<slug>`) atau domain Satamu sendiri.
 - Apakah pelanggan boleh mengedit undangannya sendiri.
-- Payment gateway (Midtrans, Xendit, Tripay, Duitku, …).
-- Jenis acara, paket dan harga undangan.
+- Paket, harga, jenis acara, dan tema yang boleh dijual sebelum aktivasi Duitku production.
 - Kontras warna coral untuk teks kecil dan tombol (lihat Known gaps di [design.md](design.md)).
 - Wordmark di `satamu-logo-flat.svg` masih memakai teks sistem (Avenir Next); perlu diubah menjadi path seperti logo Prasetya agar tampil sama di semua perangkat.
