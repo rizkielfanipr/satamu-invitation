@@ -12,15 +12,16 @@ Repo → **Settings → Secrets and variables → Actions → Repository secrets
 |---|---|
 | `SSH_PRIVATE_KEY` | Private key deploy yang sama dengan repo prasetya-webworks (`~/.ssh/griv_deploy_ed25519`, file **tanpa** `.pub`) |
 
-## Variable GitHub: pembayaran online
+## Saklar pembayaran online
 
-Repo → **Settings → Secrets and variables → Actions → Variables**.
+Pembayaran online diatur oleh satu baris di `.github/workflows/deploy.yml`, langkah **Build**:
 
-| Nama | Isi |
-|---|---|
-| `PUBLIC_PLATFORM_API_URL` | `https://platform.prasetyawebworks.web.id` untuk mengaktifkan **Langsung bayar**. Kosong atau tidak ada: form order hanya menawarkan konsultasi WhatsApp |
+```yaml
+PUBLIC_PLATFORM_API_URL: ''                                         # mati: form order hanya WhatsApp
+PUBLIC_PLATFORM_API_URL: 'https://platform.prasetyawebworks.web.id' # aktif: tombol Langsung bayar
+```
 
-Nilainya dibaca saat build (`site.platformApiUrl` di `src/config/site.ts`), jadi perubahan baru berlaku setelah workflow dijalankan ulang. Ini bukan secret: alamat API terlihat di browser.
+Nilainya dibaca saat build (`site.platformApiUrl` di `src/config/site.ts`), jadi berlaku setelah perubahan itu di-push ke `main` dan workflow selesai. Saklar disimpan di git, bukan di repository variable, agar setiap perubahan tercatat dan bisa di-revert. Ini bukan secret: alamat API memang terlihat di browser.
 
 Host key `server.griv.co.id` dipatok di workflow. Cara membuat atau mengganti key ada di dokumen deployment prasetya-webworks.
 
@@ -52,7 +53,7 @@ Urutan lengkap ada di runbook deployment Prasetya Platform (`../prasetya-platfor
 2. Deploy Satamu tanpa `PUBLIC_PLATFORM_API_URL`; cek form order hanya menawarkan WhatsApp.
 3. Uji lokal dengan fake gateway, lalu satu pembayaran Duitku sandbox sampai status lunas dan tampil di back office.
 4. Setelah harga dan paket disetujui pemilik, aktifkan paket di platform (`platform:package-activate`).
-5. Isi variable `PUBLIC_PLATFORM_API_URL`, lalu jalankan ulang workflow.
+5. Ubah `PUBLIC_PLATFORM_API_URL` di `deploy.yml` menjadi URL platform, lalu push ke `main`.
 
 ## Uji lokal dengan platform
 
@@ -64,4 +65,4 @@ Urutan lengkap ada di runbook deployment Prasetya Platform (`../prasetya-platfor
 
 `git revert <commit>` lalu push ke `main`, atau **Re-run all jobs** pada run deploy dari commit yang masih bagus.
 
-Untuk mematikan pembayaran online saja: kosongkan variable `PUBLIC_PLATFORM_API_URL` lalu **Run workflow**. Order dan pembayaran yang sudah ada tetap di platform dan tetap diproses; jangan menghapusnya.
+Untuk mematikan pembayaran online saja: kembalikan `PUBLIC_PLATFORM_API_URL: ''` di `deploy.yml` (atau `git revert` commit yang mengaktifkannya), lalu push ke `main`. Order dan pembayaran yang sudah ada tetap di platform dan tetap diproses; jangan menghapusnya.

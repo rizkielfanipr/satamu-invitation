@@ -40,12 +40,13 @@ jobs:
       - name: Browser tests
         run: npm run test:e2e
 
-      # Online payment is on only when the repository variable PUBLIC_PLATFORM_API_URL is set
-      # (Settings > Secrets and variables > Actions > Variables). Empty or unset: WhatsApp-only, which is also the rollback.
+      # Online payment switch, kept in git so every change is reviewed and revertable (not a secret).
+      # Empty: WhatsApp-only, which is also the rollback. On: https://platform.prasetyawebworks.web.id
+      # Turn it on only after the steps in docs/deployment.md, "Aktivasi pembayaran online".
       - name: Build
         run: npm run build
         env:
-          PUBLIC_PLATFORM_API_URL: ${{ vars.PUBLIC_PLATFORM_API_URL }}
+          PUBLIC_PLATFORM_API_URL: ''
 
       # Pull requests only validate and build; main deploys.
       - name: Upload to cPanel via SSH
